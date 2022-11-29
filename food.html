@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Foods</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1> My Foods</h1>
+<div class ="content">
+    <form id ="add-food-form">
+        <input type="text" name="name" placeholder="Food Name">
+        <input type="text" name="city" placeholder="Food Type">
+        <button>Add Food</button>
+    </form>
+    <ul id ="Foods-list"></ul>
+</div>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    import { getFirestore , collection, getDocs, addDoc,doc} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbQVPd8rVpzFT63JeApm3Et3zCOICGM-4",
+      authDomain: "sample-project-26660.firebaseapp.com",
+      projectId: "sample-project-26660",
+      storageBucket: "sample-project-26660.appspot.com",
+      messagingSenderId: "647324145517",
+      appId: "1:647324145517:web:eebce9637ad21533496c64",
+      measurementId: "G-ZPXV4K0SBZ"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db =getFirestore(app);
+    async function getFoods(db) {
+    const foodsCol = collection(db, "Food");
+    const foodsSnapshot = await getDocs(foodsCol);
+    const foodsList = foodsSnapshot.docs.map((doc) => doc.data());
+    return foodsList;
+  }
+const foodsList = document.querySelector('#Foods-list');
+const form = document.querySelector('#add-food-form');
+function renderFood(doc){
+    let li = document.createElement("li");
+    let name = document.createElement("span");
+    let type = document.createElement("span");
+
+    li.setAttribute('data-id', doc.id);
+    name.textContent = doc.name;
+    type.textContent= doc.type;
+
+    li.appendChild(name);
+    li.appendChild(type);
+    foodsList.appendChild(li);
+}
+const foods =getFoods(db).then((snapshot)=> (
+    snapshot.forEach((doc)=> {
+        renderFood(doc);
+    })
+)
+)
+ 
+   
+
+//getFoods(db);
+form.addEventListener(('submit'), (e) => {
+            e.preventDefault();
+            const docRef = addDoc(collection(db, "Food"), {
+                name: form.name.value,
+                type: form.type.value
+            })
+        })
+  </script>
+<script src ="app.js"></script>
+</body>
+</html>
